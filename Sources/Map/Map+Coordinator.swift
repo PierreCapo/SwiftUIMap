@@ -111,6 +111,14 @@ extension Map {
                     annotationContentByID.removeValue(forKey: item.id)
                 }
             }
+            
+            if let selectedAnnotationId = previousView?.selectedAnnotation,
+               let selectedAnnotation = annotationContentByID[selectedAnnotationId]
+            {
+                mapView.selectAnnotation(selectedAnnotation.annotation, animated: false)
+            } else {
+                mapView.selectedAnnotations.forEach { mapView.deselectAnnotation($0, animated: true) }
+            }
         }
 
         private func updateCamera(on mapView: MKMapView, context: Context, animated: Bool) {
@@ -255,6 +263,15 @@ extension Map {
             }
             view?.coordinateRegion = mapView.region
             view?.mapRect = mapView.visibleMapRect
+        }
+        
+        public func mapView(_ mapView: MKMapView, didSelect annotation: MKAnnotation) {
+            if let content = annotationContentByObject[ObjectIdentifier(annotation)] as? MapMarker<AnnotationItems.Element.ID> {
+                view?.selectedAnnotation = content.id
+                print(content)
+            }
+
+          //  print(annotation)
         }
 
         @available(macOS 11, *)
